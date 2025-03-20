@@ -1,8 +1,7 @@
-from random import randint
-from math import sin, cos, radians
 import pygame
 import cathedral
 import graphics
+import controls
 
 # Initialising game
 pygame.init()
@@ -12,15 +11,7 @@ width, height = 640, 640
 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
 pygame.display.set_caption('Cathedral')
 clock = pygame.time.Clock()
-game = cathedral.Game()
-
-# Create a random board state
-for _ in range(1000):
-    game.x, game.y = randint(0, 9), randint(0, 9)
-    for _ in range(randint(0, 5)):
-        game.player.next()
-    game.place()
-game.playing = False
+game = cathedral.Game(True)
 
 angle = 36
 layers = 17
@@ -39,54 +30,21 @@ while True:
             exit()
         if event.type == pygame.WINDOWRESIZED:
             scale = min(screen.get_width(), screen.get_height()) // 180
+
         if event.type == pygame.KEYDOWN:
-            # If shift is being held down, use alternative keybinds
-            if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-                if event.key == pygame.K_a or event.key == pygame.K_j:
-                    game.player.prev()
-                if event.key == pygame.K_d or event.key == pygame.K_l:
-                    game.player.next()
+            if event.key == pygame.K_SPACE and not game.playing:
+                transitioning = True
 
-            # Otherwise if the shift key isn't held down, use normal key binds
-            else:
-                # Piece movement, using trig functions to ensure the piece moves acording to what's seen
-                # 0.75 multiplier ensures that the piece doesn't move on the x-axis and y-axis simultaniously
-                if event.key == pygame.K_a or event.key == pygame.K_j:
-                    game.x -= round(0.75 * cos(radians(angle)))
-                    game.y -= round(0.75 * sin(radians(angle)))
-                if event.key == pygame.K_d or event.key == pygame.K_l:
-                    game.x += round(0.75 * cos(radians(angle)))
-                    game.y += round(0.75 * sin(radians(angle)))
-                if event.key == pygame.K_w or event.key == pygame.K_i:
-                    game.x += round(0.75 * sin(radians(angle)))
-                    game.y -= round(0.75 * cos(radians(angle)))
-                if event.key == pygame.K_s or event.key == pygame.K_k:
-                    game.x -= round(0.75 * sin(radians(angle)))
-                    game.y += round(0.75 * cos(radians(angle)))
+            # Check inputs
+            controls.check_keys(event.key, game)
+        controls.check_mouse(event.type, angle, game)
 
-                game.x = max(min(game.x, 9), 0)  # Ensure position is still inbounds
-                game.y = max(min(game.y, 9), 0)
+    # Send piece to mouse
+    controls.find_piece_position(pygame.mouse.get_pos(), screen.get_size(), scale, angle, game)
 
-                # Piece rotations
-                if event.key == pygame.K_q or event.key == pygame.K_u:
-                    game.player.rotate()
-                if event.key == pygame.K_e or event.key == pygame.K_o:
-                    game.player.rotate()
-                    game.player.rotate()
-                    game.player.rotate()
-
-            # If the space key is pressed, place the piece or start a new game
-            if event.key == pygame.K_SPACE:
-                if game.playing:
-                    game.place()
-                else:
-                    transitioning = True
-
-    # Rotate the board
-    if (keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and (keys[pygame.K_q] or keys[pygame.K_u]) and game.playing:
-        angle += 4.5
-    if (keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and (keys[pygame.K_e] or keys[pygame.K_o]) and game.playing:
-        angle -= 4.5
+    # Rotate Board
+    if pygame.mouse.get_pressed()[2]:
+        angle = controls.find_board_angle(pygame.mouse.get_pos(), screen.get_size())
 
     # Draw the game board
     screen.fill('white')
