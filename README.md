@@ -30,10 +30,10 @@ The territory may not be claimed if the enclosed space has more than one enemy p
 When the game is over, the winner can be calculated by adding the points of the remaining pieces (the number of squares a piece would occupy). He who has the fewest points wins.
 
 ## Controls
-Moving a piece: W/I, A/J, S/K, D/L for Up, Left, Right, and Down respectively.
+Placing a Piece: Left Click or Space
 
-Rotating a piece: Q/U and E/O to rotate Clockwise and Anticlockwise respectively.
+Changing Selected Piece: a/d or Left/Right Arrows
 
-Changing select piece: Shift + A/J/D/L to go to next or previous piece.
+Rotating a Piece: Right Click
 
-Rotating the board: Shift + Q/U/E/O to rotate Clockwise or Anticlockwise.
+Rotating the Board: Hold Right Click and Drag
