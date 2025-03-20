@@ -123,12 +123,12 @@ def draw_select_piece(game: cathedral.Game, angle: float = 45) -> pygame.Surface
         image = pygame.transform.rotate(layer, 90 * piece[1])
         sheet_list[i+1].blit(image, (10 * piece[2][0] + 10, 10 * piece[2][1] + 10))
 
-    surface = pygame.Surface((250, 200), pygame.SRCALPHA)
+    surface = pygame.Surface((250, 250), pygame.SRCALPHA)
 
     for i, layer in enumerate(sheet_list):
         image = pygame.transform.rotate(layer, angle)
 
-        new_rect = image.get_rect(center=(125, 106 - i))
+        new_rect = image.get_rect(center=(125, 126 - i))
         dest = (round(new_rect.topleft[0]), round(new_rect.topleft[1]))
 
         surface.blit(image, dest)
@@ -153,7 +153,7 @@ def draw_remaining_pieces(game: cathedral.Game) -> list[pygame.Surface]:
 
 
 def draw_board(game: cathedral.Game, angle: float = 45, layers: int = 16) -> pygame.Surface:
-    surface = pygame.Surface((250, 200), pygame.SRCALPHA)
+    surface = pygame.Surface((250, 250), pygame.SRCALPHA)
 
     sprite_sheet = prepare_image(game)  # Prepare the sprite sheet
 
@@ -161,7 +161,7 @@ def draw_board(game: cathedral.Game, angle: float = 45, layers: int = 16) -> pyg
         if i < layers:
             image = pygame.transform.rotate(layer, angle)
 
-            new_rect = image.get_rect(center=(125, 105 - i))
+            new_rect = image.get_rect(center=(125, 125 - i))
             dest = (round(new_rect.topleft[0]), round(new_rect.topleft[1]))
 
             surface.blit(image, dest)
