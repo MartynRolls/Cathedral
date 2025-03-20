@@ -1,4 +1,5 @@
 from copy import deepcopy
+from random import randint
 
 pieces = {'Tavern':     [0, 0, 0, 0, 1, 0, 0, 0, 0],
           'Stable':     [0, 0, 0, 0, 1, 0, 0, 1, 0],
@@ -79,16 +80,16 @@ class Board:
             print(string)           # Print the string for that row
         print()                     # Add space below
 
-    def check(self, piece: Piece, position: tuple[int, int]) -> bool:
+    def check(self, piece: Piece, position: tuple[int, int], check_boundries_only: bool = False) -> bool:
         for y in range(piece.size):
             for x in range(piece.size):
                 if piece.piece[x + y * piece.size]:  # If there is a part of the piece in this tile
                     x_dest, y_dest = position[0] + x - piece.size // 2, position[1] + y - piece.size // 2
                     if not (0 <= x_dest <= 9 and 0 <= y_dest <= 9):
                         return False  # Can't place if out of bounds
-                    if self.board[x_dest][y_dest]:
+                    if self.board[x_dest][y_dest] and not check_boundries_only:
                         return False  # Can't place if on another piece
-                    if 0 < self.territory_board[x_dest][y_dest] != piece.colour_code:
+                    if 0 < self.territory_board[x_dest][y_dest] != piece.colour_code and not check_boundries_only:
                         return False  # Can't place if in another players territory
 
         return True
@@ -231,7 +232,7 @@ class Player:
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, make_random_board: bool = False):
         self.board = Board()
         self.players = [Player(1), Player(2)]
         self.player = self.players[0]
@@ -241,6 +242,14 @@ class Game:
 
         self.x, self.y = 5, 5
         self.placed_pieces = {}
+
+        if make_random_board:  # Create a random boardstate for the title screen
+            for _ in range(1000):
+                self.x, self.y = randint(0, 9), randint(0, 9)
+                for _ in range(randint(0, 5)):
+                    self.player.next()
+                self.place()
+            self.playing = False
 
     def get_piece_info(self) -> list:
         name = 'Valid ' if self.board.check(self.player.piece, (self.x, self.y)) else 'Invalid '
